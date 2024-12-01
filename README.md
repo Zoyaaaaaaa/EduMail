@@ -1,125 +1,138 @@
 
+# **EduMail: Intelligent Email Processing for EdTech Platforms** 📧🤖
 
-# EduMail: An Intelligent Email Processing System for EdTech Platforms 📧🤖
-
-**EduMail** is a cutting-edge email processing and response generation system designed specifically for **EdTech platforms**. Utilizing **Artificial Intelligence (AI)** and **Natural Language Processing (NLP)**, it automates email handling, categorization, and generates personalized, context-aware responses. This allows educational institutions, e-learning platforms, and online course providers to streamline their communication, offering faster, more accurate, and relevant responses to users. 🌱
-
----
-
-### 🚀 Key Features:
-- **Automated Email Categorization** 🗂️: Automatically sorts emails into relevant categories, such as "Student Inquiry," "Course Feedback," and "General Support."
-- **Context-Aware Response Generation** 💬: Uses AI to generate professional, personalized replies based on the email content and context.
-- **Seamless Integration** 🔌: Can be integrated with popular email services like Gmail, Outlook, etc., automating the entire email process.
-- **Scalable Architecture** 🏗️: Designed to handle increasing email volumes effortlessly as your institution grows.
-- **User-Friendly Admin Panel** 🖥️: Provides a simple interface for managing email processing and monitoring system performance.
-- **Flowchart Visualization** 🔄: A visual representation of how the email is processed and responded to, making it easier to understand the workflow.
+EduMail is an advanced, AI-powered email processing system tailored for EdTech platforms. By leveraging **LangChain**, **LangGraph**, and state-of-the-art NLP models, EduMail automates email handling, categorization, and response generation, making communication efficient and professional.
 
 ---
 
-## 🛠️ Technologies Used
+## **🚀 Key Features**
 
-EduMail is built with the following cutting-edge technologies to ensure high performance, scalability, and accuracy:
+### **1. Automated Email Categorization** 🗂️  
+Classifies emails into categories such as:
+- **Course Inquiry**
+- **Platform Issue**
+- **Feedback**
+- **Payment Issue**
+- **Off-Topic**
 
-- **Python** 🐍: The primary programming language used for core application development and machine learning models.
-- **Google Colab** ☁️: Cloud-based platform for model training and testing.
-- **Google Generative AI** 🤖: Powers AI-driven email response generation by analyzing the content and context of the email.
-- **Transformers Library** 🔥: Provides state-of-the-art NLP models for text generation and email categorization.
-- **Flask/Django** (Optional): Web frameworks for setting up a server to handle incoming emails and send responses.
-- **Docker** 🐳: Containerization tool for easy deployment and scaling.
-- **GitHub** 🧑‍💻: Used for version control and collaborative development.
+This ensures emails are routed for appropriate action.
+
+### **2. Context-Aware Response Generation** 💬  
+Generates personalized, professional replies using context extracted from emails and research.
+
+### **3. Dynamic Workflow with LangGraph** 🔄  
+EduMail’s workflows are dynamically managed with **LangGraph**, ensuring modular and scalable processing pipelines.
+
+### **4. Research Integration** 🔍  
+Fetches additional context using web search APIs for complex queries requiring detailed answers.
+
+### **5. Scalable & Efficient Architecture** 🏗️  
+Handles increasing email volumes seamlessly with a highly structured processing pipeline.
 
 ---
 
-## 📊 Flowchart: Email Processing Workflow
+## **📊 Workflow Overview**
 
-Here’s a flowchart that visualizes how EduMail processes incoming emails:
-
+### **Flowchart**  
 ```plaintext
-          +--------------------------+
-          | Incoming Email Received  |
-          +--------------------------+
+          +-------------------------+
+          |   Receive Email         |
+          +-------------------------+
                       |
                       v
-           +------------------------+
-           | Email Categorization    |
-           | (Determine type)         |
-           +------------------------+
+          +-------------------------+
+          |   Categorize Email      |
+          +-------------------------+
                       |
                       v
-         +------------------------------+
-         | Analyze Email Content        |
-         | (Context, Queries, Feedback) |
-         +------------------------------+
+     +-----------------------------------+
+     |   Research or Draft Decision     |
+     +-----------------------------------+
+         |                     |
+         v                     v
++------------------+     +------------------+
+|   Fetch Research |     |   Draft Reply    |
++------------------+     +------------------+
+         |                     |
+         v                     v
+   +-------------------------+
+   |   Rewrite or Finalize   |
+   +-------------------------+
                       |
                       v
-         +-----------------------------+
-         | Response Generation         |
-         | (Generate Contextual Reply) |
-         +-----------------------------+
-                      |
-                      v
-         +--------------------------+
-         | Send Response to User    |
-         +--------------------------+
+          +-------------------------+
+          |   Send Final Response   |
+          +-------------------------+
 ```
 
 ---
 
-## 🔍 How It Works
+## **🛠️ Technologies Used**
 
-EduMail streamlines the email management process by automating the steps involved:
+1. **LangChain** 🧠  
+   Handles prompt creation, chaining tasks, and ensuring output parsing consistency.
 
-1. **Incoming Email** 📥: The system receives an email from a user (student, instructor, admin).
-2. **Email Categorization** 🗂️: AI categorizes the email based on its content (e.g., inquiry, feedback, support).
-3. **Content Analysis** 🧠: The system analyzes the content, extracting key information like questions or feedback.
-4. **Response Generation** ✍️: Using **Google Generative AI**, the system generates a professional and context-aware response.
-5. **Send Response** 📤: The system sends the generated response back to the user.
+2. **LangGraph** 📈  
+   - Manages the conditional logic of the email processing pipeline.  
+   - Nodes and edges define distinct tasks like categorization, drafting, analysis, and rewriting.
 
----
+3. **GROQ LLM** 🤖  
+   Powers email categorization, keyword extraction, draft creation, and analysis.
 
-## 🚀 Getting Started
+4. **Python** 🐍  
+   The core programming language for system implementation and workflows.
 
-### Prerequisites:
-Ensure you have the following tools installed:
-- **Python 3.8+** 🐍
-- **Git** 🦸‍♂️
-- **Google Colab** (Optional, for model training)
+5. **Tavily Search** 🔍  
+   Fetches relevant information from the web to enhance email responses.
 
-### Installation Steps:
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/Zoyaaaaaaa/EduMail.git
-   cd EduMail
-   ```
-
-2. **Set Up a Virtual Environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # For Windows: venv\Scripts\activate
-   ```
-
-3. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run the Application**:
-   ```bash
-   python app.py  # Or use your preferred method to run the app
-   ```
-
-5. **Training the Model (Optional)**:
-   - Open the `EduMail_Analysis.ipynb` notebook on **Google Colab** and follow the steps to train or fine-tune the models for categorization and response generation.
+6. **Markdown for Outputs** 📄  
+   Saves email drafts and final outputs in markdown format for easy access.
 
 ---
 
-## 💡 About EduMail
+## **📂 Key File: `email_agent.py`**
 
-EduMail is designed to optimize email management for **EdTech platforms**, providing a solution that is **automated, scalable, and efficient**. By automating the response process, EduMail helps educational institutions and e-learning platforms to offer fast, personalized, and accurate responses to all email queries, freeing up valuable time and resources.
+### **Function Highlights**
 
-Whether you are responding to a student inquiry, gathering feedback, or managing general support requests, EduMail ensures every email is handled promptly and professionally, improving communication efficiency across the board.
+1. **Categorize Email**  
+   Uses AI to classify emails into predefined categories.  
+   ```python
+   def categorize_email(state):
+       email_category = email_category_generator.invoke({"initial_email": initial_email})
+   ```
+
+2. **Research Keywords & Web Search**  
+   Extracts keywords for context and fetches additional information when necessary.  
+   ```python
+   keywords = search_keyword_chain.invoke({"initial_email": initial_email, "email_category": email_category})
+   ```
+
+3. **Draft Email**  
+   Generates the first draft based on the categorized email and available research.  
+   ```python
+   draft_email = draft_writer_chain.invoke({"initial_email": initial_email, "email_category": email_category})
+   ```
+
+4. **Analyze & Rewrite**  
+   Provides feedback on drafts and rewrites as needed for professionalism and clarity.  
+   ```python
+   final_email = rewrite_chain.invoke({...})
+   ```
+
+5. **Dynamic Workflow with LangGraph**  
+   Manages the full email handling lifecycle through conditional edges and stateful nodes.  
+   ```python
+   workflow.add_conditional_edges("categorize_email", route_to_research, {...})
+   ```
 
 ---
 
-By automating the email response workflow, EduMail transforms communication processes, enabling institutions to focus more on **educational quality** while providing faster and more efficient support to students, instructors, and administrators alike. 📚✨
+## **✨ Benefits**
+
+- **Time-Saving Automation**: Respond to emails quickly and accurately.  
+- **Scalable & Modular**: Easily handle increasing email volumes.  
+- **High Accuracy**: AI ensures responses are contextually appropriate and professional.  
+
+---
+
+**EduMail** is your AI-powered partner in streamlining EdTech communication, ensuring seamless and intelligent email management! 🌟
