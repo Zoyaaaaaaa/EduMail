@@ -34,36 +34,7 @@ Handles increasing email volumes seamlessly with a highly structured processing 
 ## **📊 Workflow Overview**
 
 ### **Flowchart**  
-```plaintext
-          +-------------------------+
-          |   Receive Email         |
-          +-------------------------+
-                      |
-                      v
-          +-------------------------+
-          |   Categorize Email      |
-          +-------------------------+
-                      |
-                      v
-     +-----------------------------------+
-     |   Research or Draft Decision     |
-     +-----------------------------------+
-         |                     |
-         v                     v
-+------------------+     +------------------+
-|   Fetch Research |     |   Draft Reply    |
-+------------------+     +------------------+
-         |                     |
-         v                     v
-   +-------------------------+
-   |   Rewrite or Finalize   |
-   +-------------------------+
-                      |
-                      v
-          +-------------------------+
-          |   Send Final Response   |
-          +-------------------------+
-```
+![image](https://github.com/user-attachments/assets/5bff0b55-bbb8-4f9e-8f1d-6d9c93b887b6)
 
 ---
 
