@@ -37,6 +37,11 @@ Handles increasing email volumes seamlessly with a highly structured processing 
 ![image](https://github.com/user-attachments/assets/5bff0b55-bbb8-4f9e-8f1d-6d9c93b887b6)
 
 ---
+Video Demo 
+
+https://github.com/user-attachments/assets/93173fba-6993-4488-9b77-1c382ad9d7d5
+
+
 
 ## **🛠️ Technologies Used**
 
