@@ -1,0 +1,326 @@
+### Refund Policies for YAZO EDUCARE Platform
+
+YAZO EDUCARE is committed to providing high-quality educational services and ensuring customer satisfaction. Below are the detailed refund policies categorized for various scenarios:
+
+---
+
+#### **Subscription Cancellation Refunds**
+**Description:** Refund requests related to subscription cancellations.
+
+**Process:**
+1. Log in to your YAZO EDUCARE account.
+2. Navigate to "Account Settings" > "Subscriptions".
+3. Click on "Cancel Subscription" and confirm the cancellation.
+4. Submit a refund request through the "Support" portal.
+
+**Additional Information:**
+- Refunds are available for cancellations within the first 7 days of subscription.
+- Annual plans are eligible for a prorated refund.
+- Contact support@yazoeducare.com for further assistance.
+
+---
+
+#### **Course Refunds**
+**Description:** Refunds for individual courses purchased on the platform.
+
+**Process:**
+1. Visit the "My Courses" section in your account.
+2. Select the course and click "Request Refund".
+3. Provide the reason for the refund and submit the form.
+
+**Additional Information:**
+- Refunds are only applicable if less than 20% of the course content has been accessed.
+- Refund requests must be submitted within 14 days of purchase.
+- Non-refundable for discounted or promotional courses.
+
+---
+
+#### **Technical Issues Refunds**
+**Description:** Refunds for users unable to access content due to technical issues.
+
+**Process:**
+1. Check the system requirements and internet connectivity.
+2. Report the issue via the "Help Center".
+3. If unresolved within 48 hours, submit a refund request with the ticket ID.
+
+**Additional Information:**
+- A detailed explanation of the issue is required.
+- Screenshots or recordings may be requested for verification.
+- Refund approval is at the discretion of YAZO EDUCARE’s support team.
+
+---
+
+#### **Refunds for Live Classes**
+**Description:** Refund requests for live classes missed or canceled.
+
+**Process:**
+1. Email support@yazoeducare.com with details of the class.
+2. Provide a valid reason and proof of payment.
+
+**Additional Information:**
+- Refunds are not available for classes attended partially.
+- Cancellations by YAZO EDUCARE are fully refundable.
+- Rescheduling options may be offered as an alternative.
+
+---
+
+#### **Refund Timeline**
+Refunds are processed within 7-10 business days after approval. The amount will be credited to the original payment method.
+
+---
+
+### Powered by Generative AI
+The above refund policy document has been crafted with the assistance of advanced Generative AI models to ensure clarity and precision in our communication.
+
+Here is the updated `data.txt` file containing all necessary details:
+
+---
+
+**Category:** Login_Issues  
+**Description:** Unable to access account or password problems.  
+**Solution:**  
+1. Use the 'Forgot Password' link on the login page.  
+2. Check email for a reset link.  
+3. Create a strong password with numbers and symbols.  
+**Additional Info:**  
+- Link expires in 24 hours.  
+- Maximum 3 attempts before lockout.  
+- Contact support@platform.com for lockouts.  
+
+---  
+
+**Category:** Password_Reset  
+**Description:** Password recovery and reset requests.  
+**Solution:**  
+1. Visit the password reset page.  
+2. Enter the registered email.  
+3. Follow instructions in the reset email.  
+**Additional Info:**  
+- Security questions required.  
+- New password must be different from the last 3.  
+- Two-factor authentication recommended.  
+
+---  
+
+**Category:** Account_Activation  
+**Description:** New account activation process.  
+**Solution:**  
+1. Check email for activation link.  
+2. Click to verify email.  
+3. Complete profile setup.  
+**Additional Info:**  
+- Activation link valid for 48 hours.  
+- Business accounts need additional verification.  
+- Check spam folder if email not received.  
+
+---  
+
+**Category:** Billing_Issues  
+**Description:** Payment and invoice problems.  
+**Solution:**  
+1. Verify payment method details.  
+2. Check for expired cards.  
+3. Contact billing support for disputes.  
+**Additional Info:**  
+- Payment retry every 24 hours.  
+- Grace period of 3 days.  
+- Email billing@platform.com for inquiries.  
+
+---  
+
+**Category:** Subscription_Management  
+**Description:** Managing subscription plans and changes.  
+**Solution:**  
+1. Go to Account Settings.  
+2. Select 'Subscription'.  
+3. Choose plan modification options.  
+**Additional Info:**  
+- Pro-rated billing available.  
+- 30-day downgrade waiting period.  
+- Annual plans get 2 months free.  
+
+---  
+
+**Category:** Pricing_Query  
+**Description:** Questions about pricing plans.  
+**Solution:**  
+- Basic: $10/month.  
+- Pro: $25/month.  
+- Enterprise: Custom pricing.  
+**Additional Info:**  
+- Monthly and annual options.  
+- Team discounts available.  
+- Educational discounts: 50% off.  
+- Non-profit discounts available.  
+
+---  
+
+**Category:** Feature_Request  
+**Description:** New feature suggestions.  
+**Solution:**  
+1. Submit via feedback portal.  
+2. Vote on existing requests.  
+3. Track request status.  
+**Additional Info:**  
+- Quarterly feature releases.  
+- Priority based on user votes.  
+- Beta testing opportunity.  
+
+---  
+
+**Category:** Technical_Support  
+**Description:** Platform technical issues.  
+**Solution:**  
+1. Check the system status page.  
+2. Clear browser cache.  
+3. Try incognito mode.  
+4. Use supported browsers.  
+**Additional Info:**  
+- 24/7 support for enterprise.  
+- Live chat 9am-5pm EST.  
+- Documentation at docs.platform.com.  
+
+---  
+
+**Category:** API_Integration  
+**Description:** API setup and documentation.  
+**Solution:**  
+1. Generate an API key.  
+2. Read API documentation.  
+3. Test in the sandbox environment.  
+**Additional Info:**  
+- Rate limits apply.  
+- Authentication required.  
+- Technical support available.  
+
+---  
+
+**Category:** Data_Export  
+**Description:** Exporting platform data.  
+**Solution:**  
+1. Go to Data Management.  
+2. Select export format.  
+3. Request download link.  
+**Additional Info:**  
+- Available formats: CSV, JSON.  
+- 48-hour processing time.  
+- Size limits: 10GB per export.  
+
+---  
+
+**Category:** Security_Concerns  
+**Description:** Security-related issues.  
+**Solution:**  
+1. Enable 2FA.  
+2. Review login history.  
+3. Report suspicious activity.  
+**Additional Info:**  
+- 256-bit encryption.  
+- SOC 2 compliant.  
+- Regular security audits.  
+
+---  
+
+**Category:** Mobile_App_Issues  
+**Description:** Mobile application problems.  
+**Solution:**  
+1. Update to the latest version.  
+2. Clear app cache.  
+3. Reinstall if needed.  
+**Additional Info:**  
+- iOS 13+ required.  
+- Android 8+ required.  
+- Offline mode available.  
+
+---  
+
+**Category:** Account_Deletion  
+**Description:** Account removal requests.  
+**Solution:**  
+1. Export data first.  
+2. Cancel subscriptions.  
+3. Submit a deletion request.  
+**Additional Info:**  
+- 30-day retention period.  
+- Non-reversible process.  
+- Compliance with GDPR.  
+
+---  
+
+**Category:** Platform_Updates  
+**Description:** System updates and maintenance.  
+**Solution:**  
+1. Check the update schedule.  
+2. Read release notes.  
+3. Report post-update issues.  
+**Additional Info:**  
+- Scheduled maintenance windows.  
+- Beta testing program.  
+- Rollback procedures.  
+
+---  
+
+**Category:** Integration_Support  
+**Description:** Third-party integration help.  
+**Solution:**  
+1. Check the compatibility list.  
+2. Follow the integration guide.  
+3. Test in staging.  
+**Additional Info:**  
+- Popular tools supported.  
+- Custom integrations available.  
+- API documentation provided.  
+
+---  
+
+**Category:** Performance_Issues  
+**Description:** Platform speed and performance.  
+**Solution:**  
+1. Check internet connection.  
+2. Clear browser cache.  
+3. Disable extensions.  
+**Additional Info:**  
+- 99.9% uptime guaranteed.  
+- CDN optimization.  
+- Regular performance monitoring.  
+
+---  
+
+**Category:** Custom_Domain_Setup  
+**Description:** Domain configuration help.  
+**Solution:**  
+1. Add DNS records.  
+2. Verify ownership.  
+3. Wait for propagation.  
+**Additional Info:**  
+- SSL certificates included.  
+- DNS propagation: 24-48 hours.  
+- Technical support available.  
+
+---  
+
+**Category:** User_Management  
+**Description:** Managing team members and roles.  
+**Solution:**  
+1. Access the admin panel.  
+2. Set user permissions.  
+3. Send invitations.  
+**Additional Info:**  
+- Role-based access control.  
+- Bulk user import available.  
+- Audit logs provided.  
+
+---  
+
+**Category:** Data_Backup  
+**Description:** Backup and recovery options.  
+**Solution:**  
+1. Auto-backup enabled.  
+2. Manual backup available.  
+3. Recovery process.  
+**Additional Info:**  
+- Daily backups retained 30 days.  
+- Weekly backups retained 90 days.  
+- Instant recovery available.  
+
+---  
