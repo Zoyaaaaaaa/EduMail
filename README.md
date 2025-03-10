@@ -38,17 +38,7 @@ EduMail Pro is a cutting-edge email management system specifically designed for 
 
 ## **🎬 Video Demonstration**
 
-<div style="padding: 20px; background-color: #f7f7f7; border-radius: 8px; text-align: center; margin: 20px 0;">
-    <h3>See EduMail Pro in Action</h3>
-    <p>Watch how EduMail processes complex student inquiries, generates personalized responses, and integrates with educational platforms.</p>
-    <div style="background-color: #000; border-radius: 6px; padding-top: 56.25%; position: relative; overflow: hidden; margin: 20px 0;">
-       
-        <p style="color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            Video: https://github.com/user-attachments/assets/93173fba-6993-4488-9b77-1c382ad9d7d5
-        </p>
-    </div>
-    <p><em>Demo showcases real-time email processing, agent collaboration, and response generation</em></p>
-</div>
+
 
 ---
 
