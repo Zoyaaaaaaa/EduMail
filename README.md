@@ -38,7 +38,7 @@ EduMail Pro is a cutting-edge email management system specifically designed for 
 
 ## **🎬 Video Demonstration**
 
-
+https://drive.google.com/file/d/1QmQIiLi5WFpjyg93vnWx8B4KIjgiXIxD/view?usp=sharing
 
 ---
 
