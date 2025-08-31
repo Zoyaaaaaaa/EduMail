@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Email Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1E88E5;
+            --secondary-color: #0D47A1;
+            --success-color: #43A047;
+            --error-color: #E53935;
+            --light-blue: #E3F2FD;
+            --light-green: #E8F5E9;
+            --light-red: #FFEBEE;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 15px 15px 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(30, 136, 229, 0.25);
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.4);
+            color: white;
+        }
+
+        .btn-custom:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .alert-custom {
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: var(--light-green);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background: var(--light-red);
+            color: var(--error-color);
+            border-left: 4px solid var(--error-color);
+        }
+
+        .alert-info {
+            background: var(--light-blue);
+            color: var(--secondary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .spinner-custom {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .email-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid #e0e6ed;
+        }
+
+        .company-selector {
+            background: var(--light-blue);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .knowledge-base-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-envelope"></i> AI Email Assistant</h1>
+                <p class="mb-0">Scalable AI-powered email processing with vector database</p>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="knowledge-tab" data-bs-toggle="tab" data-bs-target="#knowledge" type="button" role="tab">
+                        <i class="fas fa-database"></i> Knowledge Base
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="process-tab" data-bs-toggle="tab" data-bs-target="#process" type="button" role="tab">
+                        <i class="fas fa-cogs"></i> Process Email
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="send-tab" data-bs-toggle="tab" data-bs-target="#send" type="button" role="tab">
+                        <i class="fas fa-paper-plane"></i> Send Email
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                        <i class="fas fa-chart-bar"></i> Dashboard
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="mainTabContent">
+                
+                <!-- Knowledge Base Tab -->
+                <div class="tab-pane fade show active" id="knowledge" role="tabpanel">
+                    <div class="knowledge-base-info">
+                        <h4><i class="fas fa-info-circle"></i> Knowledge Base Management</h4>
+                        <p class="mb-0">Add or update company knowledge bases. Each company gets its own vector collection in Qdrant for scalable and efficient retrieval.</p>
+                    </div>
+
+                    <form id="knowledgeForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="companyName" class="form-label">Company Name</label>
+                                    <input type="text" class="form-control" id="companyName" name="companyName" required placeholder="e.g., Acme Corporation">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contactEmail" class="form-label">Contact Email</label>
+                                    <input type="email" class="form-control" id="contactEmail" name="contactEmail" required placeholder="contact@company.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="knowledgeData" class="form-label">Knowledge Base Content</label>
+                            <textarea class="form-control" id="knowledgeData" name="knowledgeData" rows="12" required 
+                                placeholder="Enter comprehensive company information including:
+- Products and services
+- Pricing information
+- Policies and procedures
+- Contact details
+- FAQ responses
+- Company background
+
+Example:
+Company: Eco-friendly Water Bottles Inc.
+Products: Premium stainless steel water bottles ($25-$50)
+Return Policy: 30-day money-back guarantee
+Shipping: Free shipping on orders over $75
+Contact: support@ecobottles.com, (555) 123-4567
+Sustainability: All products are 100% recyclable and BPA-free"></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-custom">
+                                <i class="fas fa-save"></i> Save Knowledge Base
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="knowledgeResult"></div>
+
+                    <div class="loading" id="knowledgeLoading">
+                        <div class="spinner-custom"></div>
+                        <p>Saving knowledge base to vector database...</p>
+                    </div>
+                </div>
+
+                <!-- Process Email Tab -->
+                <div class="tab-pane fade" id="process" role="tabpanel">
+                    <div class="company-selector">
+                        <h5><i class="fas fa-building"></i> Select Company</h5>
+                        <select class="form-select" id="processCompanySelect">
+                            <option value="">Choose a company...</option>
+                        </select>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="loadCompanies()">
+                            <i class="fas fa-refresh"></i> Refresh Companies
+                        </button>
+                    </div>
+
+                    <form id="processEmailForm">
+                        <div class="mb-3">
+                            <label for="emailContent" class="form-label">Email Content to Process</label>
+                            <textarea class="form-control" id="emailContent" name="emailContent" rows="10" required 
+                                placeholder="Paste the email content here. Include sender information, subject, and message body.
+
+Example:
+From: customer@example.com
+Subject: Question about water bottle durability
+
+Hello,
+I'm interested in purchasing your eco-friendly water bottles for my office team. Could you please tell me more about their durability and if they come with any warranty? We need about 50 bottles.
+
+Thanks,
+Sarah Johnson"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="senderEmail" class="form-label">Sender Email (Optional)</label>
+                            <input type="email" class="form-control" id="senderEmail" name="senderEmail" 
+                                placeholder="customer@example.com">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-custom" id="processBtn">
+                                <i class="fas fa-cogs"></i> Process Email
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="processResult"></div>
+
+                    <div class="loading" id="processLoading">
+                        <div class="spinner-custom"></div>
+                        <p>Processing email with AI agents...</p>
+                    </div>
+
+                    <!-- Email Processing Results -->
+                    <div id="emailResults" style="display: none;">
+                        <div class="card-custom mt-4">
+                            <div class="card-header-custom">
+                                <i class="fas fa-robot"></i> AI Processing Results
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6><strong>Category:</strong> <span id="emailCategory" class="badge bg-primary"></span></h6>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6><strong>Confidence:</strong> <span id="confidenceScore"></span>%</h6>
+                                    </div>
+                                </div>
+                                <hr>
+                                <h6><strong>Generated Response:</strong></h6>
+                                <div class="email-preview">
+                                    <pre id="generatedResponse"></pre>
+                                </div>
+                                <div class="d-grid mt-3">
+                                    <button type="button" class="btn btn-success" onclick="copyToSendTab()">
+                                        <i class="fas fa-arrow-right"></i> Use This Response
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Send Email Tab -->
+                <div class="tab-pane fade" id="send" role="tabpanel">
+                    <div class="alert alert-info alert-custom">
+                        <i class="fas fa-shield-alt"></i> <strong>Security Note:</strong> 
+                        For Gmail users, use an App Password instead of your regular password. 
+                        <a href="https://support.google.com/accounts/answer/185833" target="_blank">Learn how to create one</a>.
+                    </div>
+
+                    <form id="sendEmailForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="senderEmailSend" class="form-label">Your Email Address</label>
+                                    <input type="email" class="form-control" id="senderEmailSend" name="senderEmailSend" required 
+                                        placeholder="your.email@gmail.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="senderPassword" class="form-label">Your Email Password</label>
+                                    <input type="password" class="form-control" id="senderPassword" name="senderPassword" required 
+                                        placeholder="Use App Password for Gmail">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="receiverEmail" class="form-label">Recipient Email</label>
+                                    <input type="email" class="form-control" id="receiverEmail" name="receiverEmail" required 
+                                        placeholder="customer@example.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="emailSubject" class="form-label">Subject</label>
+                                    <input type="text" class="form-control" id="emailSubject" name="emailSubject" required 
+                                        placeholder="Re: Your inquiry">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sendCompanySelect" class="form-label">Company</label>
+                            <select class="form-select" id="sendCompanySelect" name="sendCompanySelect" required>
+                                <option value="">Choose a company...</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="emailBody" class="form-label">Email Body</label>
+                            <textarea class="form-control" id="emailBody" name="emailBody" rows="12" required 
+                                placeholder="Enter or paste the email response here..."></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-custom" id="sendBtn">
+                                <i class="fas fa-paper-plane"></i> Send Email
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="sendResult"></div>
+
+                    <div class="loading" id="sendLoading">
+                        <div class="spinner-custom"></div>
+                        <p>Sending email...</p>
+                    </div>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div class="tab-pane fade" id="dashboard" role="tabpanel">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <div class="stats-number" id="totalCompanies">0</div>
+                                <div class="text-muted">Companies</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <div class="stats-number" id="totalVectors">0</div>
+                                <div class="text-muted">Knowledge Vectors</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <div class="stats-number" id="emailsProcessed">0</div>
+                                <div class="text-muted">Emails Processed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-custom">
+                        <div class="card-header-custom">
+                            <i class="fas fa-building"></i> Company Knowledge Bases
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Company Name</th>
+                                            <th>Collection ID</th>
+                                            <th>Knowledge Vectors</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="companiesTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">
+                                                <i class="fas fa-info-circle"></i> No companies found. Add a knowledge base to get started.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-3">
+                        <button type="button" class="btn btn-outline-primary" onclick="refreshDashboard()">
+                            <i class="fas fa-sync-alt"></i> Refresh Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    // Global variables
+    let currentEmailData = null;
+    let processedEmails = 0;
+    let api_url = "https://upgraded-space-carnival-x6jqq464966hv5vg-8000.app.github.dev";
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCompanies();
+        refreshDashboard();
+    });
+
+    // API Helper Functions
+    async function apiCall(endpoint, method = 'GET', data = null) {
+        const options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        if (data) {
+            options.body = JSON.stringify(data);
+        }
+
+        try {
+            const response = await fetch(`${api_url}/api${endpoint}`, options);
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.detail || 'API request failed');
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
+        }
+    }
+
+    // Knowledge Base Functions
+    document.getElementById('knowledgeForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = {
+            company_name: formData.get('companyName'),
+            knowledge_data: formData.get('knowledgeData'),
+            contact_email: formData.get('contactEmail')
+        };
+
+        showLoading('knowledgeLoading');
+        clearResult('knowledgeResult');
+
+        try {
+            const result = await apiCall('/knowledge-base', 'POST', data);
+            showResult('knowledgeResult', result.message, 'success');
+            
+            // Refresh company lists
+            loadCompanies();
+            refreshDashboard();
+            
+            // Clear form
+            this.reset();
+        } catch (error) {
+            showResult('knowledgeResult', error.message, 'error');
+        } finally {
+            hideLoading('knowledgeLoading');
+        }
+    });
+
+    // Email Processing Functions
+    document.getElementById('processEmailForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const companyName = document.getElementById('processCompanySelect').value;
+        if (!companyName) {
+            showResult('processResult', 'Please select a company first.', 'error');
+            return;
+        }
+
+        const formData = new FormData(this);
+        const data = {
+            company_name: companyName,
+            email_content: formData.get('emailContent'),
+            sender_email: formData.get('senderEmail') || null
+        };
+
+        showLoading('processLoading');
+        clearResult('processResult');
+        hideElement('emailResults');
+
+        try {
+            const result = await apiCall('/process-email', 'POST', data);
+            
+            // Store result for copying to send tab
+            currentEmailData = {
+                ...result,
+                company_name: companyName,
+                original_content: data.email_content
+            };
+
+            // Display results
+            document.getElementById('emailCategory').textContent = result.category;
+            document.getElementById('confidenceScore').textContent = Math.round(result.confidence_score * 100);
+            document.getElementById('generatedResponse').textContent = result.response;
+
+            showElement('emailResults');
+            processedEmails++;
+            updateEmailsProcessedCount();
+            
+            showResult('processResult', `Email processed successfully! Category: ${result.category}`, 'success');
+            
+        } catch (error) {
+            showResult('processResult', error.message, 'error');
+        } finally {
+            hideLoading('processLoading');
+        }
+    });
+
+    // Email Sending Functions
+    document.getElementById('sendEmailForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {
+            sender_email: formData.get('senderEmailSend'),
+            sender_password: formData.get('senderPassword'),
+            receiver_email: formData.get('receiverEmail'),
+            subject: formData.get('emailSubject'),
+            body: formData.get('emailBody'),
+            company_name: formData.get('sendCompanySelect')
+        };
+
+        showLoading('sendLoading');
+        clearResult('sendResult');
+
+        try {
+            const result = await apiCall('/send-email', 'POST', data);
+            
+            if (result.status === 'success') {
+                showResult('sendResult', result.message, 'success');
+                // Clear sensitive data
+                document.getElementById('senderPassword').value = '';
+            } else {
+                showResult('sendResult', result.message, 'error');
+            }
+            
+        } catch (error) {
+            showResult('sendResult', error.message, 'error');
+        } finally {
+            hideLoading('sendLoading');
+        }
+    });
+
+    // Load companies for dropdowns
+    async function loadCompanies() {
+        try {
+            const result = await apiCall('/companies');
+            const companies = result.companies || [];
+            
+            const selects = ['processCompanySelect', 'sendCompanySelect'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                
+                // Clear existing options except first
+                select.innerHTML = '<option value="">Choose a company...</option>';
+                
+                companies.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company.name;
+                    option.textContent = `${company.name} (${company.vectors_count} vectors)`;
+                    select.appendChild(option);
+                });
+                
+                // Restore selection if it exists
+                if (currentValue) {
+                    select.value = currentValue;
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error loading companies:', error);
+        }
+    }
+
+    // Copy processed email to send tab
+    function copyToSendTab() {
+        if (!currentEmailData) return;
+
+        // Switch to send tab
+        const sendTab = new bootstrap.Tab(document.getElementById('send-tab'));
+        sendTab.show();
+
+        // Populate send form
+        document.getElementById('emailBody').value = currentEmailData.response;
+        document.getElementById('emailSubject').value = `Re: ${currentEmailData.category}`;
+        document.getElementById('sendCompanySelect').value = currentEmailData.company_name;
+    }
+
+    // Dashboard Functions
+    async function refreshDashboard() {
+        try {
+            const result = await apiCall('/companies');
+            const companies = result.companies || [];
+            
+            // Update stats
+            document.getElementById('totalCompanies').textContent = companies.length;
+            document.getElementById('totalVectors').textContent = 
+                companies.reduce((sum, company) => sum + company.vectors_count, 0);
+            document.getElementById('emailsProcessed').textContent = processedEmails;
+            
+            // Update table
+            const tbody = document.getElementById('companiesTableBody');
+            if (companies.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            <i class="fas fa-info-circle"></i> No companies found. Add a knowledge base to get started.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = companies.map(company => `
+                    <tr>
+                        <td><strong>${company.name}</strong></td>
+                        <td><code>${company.collection}</code></td>
+                        <td><span class="badge bg-primary">${company.vectors_count}</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                `).join('');
+            }
+            
+        } catch (error) {
+            console.error('Error refreshing dashboard:', error);
+        }
+    }
+
+    function updateEmailsProcessedCount() {
+        document.getElementById('emailsProcessed').textContent = processedEmails;
+    }
+
+    // UI Helper Functions
+    function showResult(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+        
+        element.innerHTML = `
+            <div class="alert ${alertClass} alert-custom">
+                <i class="${icon}"></i> ${message}
+            </div>
+        `;
+        element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clearResult(elementId) {
+        document.getElementById(elementId).innerHTML = '';
+    }
+
+    function showLoading(elementId) {
+        document.getElementById(elementId).style.display = 'block';
+    }
+
+    function hideLoading(elementId) {
+        document.getElementById(elementId).style.display = 'none';
+    }
+
+    function showElement(elementId) {
+        document.getElementById(elementId).style.display = 'block';
+    }
+
+    function hideElement(elementId) {
+        document.getElementById(elementId).style.display = 'none';
+    }
+
+    // Tab event listeners
+    document.addEventListener('shown.bs.tab', function (event) {
+        if (event.target.id === 'dashboard-tab') {
+            refreshDashboard();
+        }
+    });
+</script>
+
+</body>
+</html>
