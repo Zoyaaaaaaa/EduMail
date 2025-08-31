@@ -414,11 +414,11 @@ class EmailAgentManager:
             if relevant_knowledge and self.llm_config:
                 return self._ai_draft_response(company_name, email_content, category, relevant_knowledge)
             
-            # If we have knowledge but no AI, use context-aware template
+            # If we have knowledge but no AI, use context-based response
             elif relevant_knowledge:
-                return self._context_aware_response(company_name, email_content, category, relevant_knowledge)
+                return self._knowledge_based_response(company_name, email_content, category, relevant_knowledge)
             
-            # Otherwise use basic response
+            # Only use basic response if no knowledge is available
             else:
                 logger.info(f"No relevant knowledge found for {company_name}, using basic response")
                 return self._basic_response(company_name, email_content, category)
@@ -432,25 +432,30 @@ class EmailAgentManager:
         try:
             # Combine knowledge into context
             knowledge_context = "\n".join([item["text"] for item in relevant_knowledge])
-            print("KNOWLEDGE CONTEXT",knowledge_context)
+            print("KNOWLEDGE CONTEXT:", knowledge_context)
+            
             draft_agent = AssistantAgent(
                 name="DraftAgent",
                 llm_config=self.llm_config,
                 system_message=f"""You are an expert customer service representative for {company_name}. 
 
-Use this company-specific knowledge to draft your response:
+IMPORTANT: You must use the specific company knowledge provided below to draft your response. Do not provide generic responses.
+
+Company-specific knowledge:
 {knowledge_context}
 
 Guidelines:
 1. Address the customer professionally and warmly
 2. Acknowledge their specific concern or question
-3. Provide relevant information from the company knowledge above
-4. Give specific, actionable solutions when possible
-5. Include appropriate contact information if mentioned in knowledge
-6. Close with a professional signature
+3. Use ONLY the information from the company knowledge above - be specific
+4. Provide direct solutions, processes, or information from the knowledge base
+5. Include specific contact details, procedures, or policies mentioned in the knowledge
+6. If knowledge contains specific steps or processes, include them
+7. Reference specific company policies, timelines, or procedures from the knowledge
+8. Do NOT provide generic responses - tailor everything to the actual knowledge provided
 
 Category: {category}
-Make your response specific to their actual question, not generic.""",
+Draft a response that directly addresses their question using the specific company information provided.""",
             )
             
             user_proxy = UserProxyAgent(
@@ -463,7 +468,7 @@ Make your response specific to their actual question, not generic.""",
             
             user_proxy.initiate_chat(
                 draft_agent,
-                message=f"Draft a specific, helpful response for this {category} email:\n\n{email_content}\n\nUse the company knowledge provided to give specific solutions and information."
+                message=f"Customer email to respond to:\n\n{email_content}\n\nUse the company knowledge provided in your system message to draft a specific, helpful response. Reference specific procedures, policies, contact information, or solutions from the knowledge base."
             )
             
             response = user_proxy.last_message()["content"].strip()
@@ -471,201 +476,247 @@ Make your response specific to their actual question, not generic.""",
             
         except Exception as e:
             logger.error(f"Error in AI draft with Gemini: {str(e)}")
-            # Fall back to context-aware response
-            return self._context_aware_response(company_name, email_content, category, relevant_knowledge)
+            # Fall back to knowledge-based response
+            return self._knowledge_based_response(company_name, email_content, category, relevant_knowledge)
     
-    def _context_aware_response(self, company_name: str, email_content: str, category: str, relevant_knowledge: List[Dict]) -> str:
-        """Generate context-aware response using retrieved knowledge without AI"""
+    def _knowledge_based_response(self, company_name: str, email_content: str, category: str, relevant_knowledge: List[Dict]) -> str:
+        """Generate response based on retrieved knowledge context"""
         try:
-            # Extract relevant information from knowledge
-            knowledge_text = " ".join([item["text"] for item in relevant_knowledge])
+            # Extract all knowledge text
+            knowledge_context = "\n".join([item["text"] for item in relevant_knowledge])
             
-            # Create response based on category and context
+            # Analyze email content to understand what customer is asking about
+            email_lower = email_content.lower()
+            
+            # Extract specific information from knowledge context
+            context_info = self._extract_context_info(knowledge_context)
+            
+            # Build response based on category and extracted context
             if category == "Customer Complaint":
-                if "login" in email_content.lower() and "login" in knowledge_text.lower():
-                    return self._create_login_help_response(company_name, knowledge_text)
-                elif "billing" in email_content.lower() and "billing" in knowledge_text.lower():
-                    return self._create_billing_help_response(company_name, knowledge_text)
-                elif "password" in email_content.lower() and "password" in knowledge_text.lower():
-                    return self._create_password_help_response(company_name, knowledge_text)
-                else:
-                    return self._create_generic_complaint_response(company_name, knowledge_text)
-            
+                return self._build_complaint_response(company_name, email_content, context_info)
             elif category == "Sales":
-                return self._create_sales_response(company_name, knowledge_text)
-            
+                return self._build_sales_response(company_name, email_content, context_info)
             elif category == "Customer Enquiry":
-                return self._create_enquiry_response(company_name, knowledge_text)
-            
+                return self._build_enquiry_response(company_name, email_content, context_info)
             else:  # Off Topic
-                return self._basic_response(company_name, email_content, category)
+                return self._build_offtopic_response(company_name, context_info)
                 
         except Exception as e:
-            logger.error(f"Error creating context-aware response: {str(e)}")
+            logger.error(f"Error creating knowledge-based response: {str(e)}")
             return self._basic_response(company_name, email_content, category)
     
-    def _create_login_help_response(self, company_name: str, knowledge_text: str) -> str:
-        """Create specific login help response"""
-        # Extract relevant login information
-        response = f"""Dear Customer,
-
-Thank you for contacting {company_name}. I understand you're experiencing difficulties with the login process, and I'm here to help resolve this issue quickly.
-
-Based on our support documentation, here are the steps to resolve login issues:
-
-"""
+    def _extract_context_info(self, knowledge_context: str) -> dict:
+        """Extract structured information from knowledge context"""
+        context_lower = knowledge_context.lower()
         
-        # Add specific steps from knowledge if available
-        if "forgot password" in knowledge_text.lower():
-            response += "1. If you've forgotten your password, please use the 'Forgot Password' link on the login page\n"
-        if "reset link" in knowledge_text.lower():
-            response += "2. Check your email for a password reset link\n"
-        if "strong password" in knowledge_text.lower():
-            response += "3. Create a new strong password with numbers and symbols\n"
-        if "24 hours" in knowledge_text:
-            response += "4. Please note that reset links expire in 24 hours\n"
-        if "support@" in knowledge_text:
-            support_email = "support@platform.com"  # Extract from knowledge if needed
-            response += f"5. If you continue to have issues, contact our support team at {support_email}\n"
+        info = {
+            'contact_emails': [],
+            'phone_numbers': [],
+            'processes': [],
+            'policies': [],
+            'features': [],
+            'pricing_info': [],
+            'support_steps': [],
+            'timelines': [],
+            'specific_details': []
+        }
         
-        response += f"""
-If you need immediate assistance or these steps don't resolve your issue, please don't hesitate to reach out to our technical support team.
-
-We apologize for any inconvenience and appreciate your patience.
-
-Best regards,
-{company_name} Customer Support Team"""
+        # Extract email addresses
+        import re
+        emails = re.findall(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', knowledge_context)
+        info['contact_emails'] = emails
+        
+        # Extract phone numbers
+        phones = re.findall(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', knowledge_context)
+        info['phone_numbers'] = phones
+        
+        # Extract process-related information
+        if 'step' in context_lower or 'process' in context_lower:
+            lines = knowledge_context.split('\n')
+            for line in lines:
+                if any(word in line.lower() for word in ['step', 'first', 'then', 'next', 'process']):
+                    info['processes'].append(line.strip())
+        
+        # Extract policy information
+        if 'policy' in context_lower or 'rule' in context_lower:
+            lines = knowledge_context.split('\n')
+            for line in lines:
+                if any(word in line.lower() for word in ['policy', 'rule', 'must', 'required']):
+                    info['policies'].append(line.strip())
+        
+        # Extract timeline information
+        timeline_keywords = ['24 hours', '48 hours', 'within', 'business days', 'immediately', 'urgent']
+        for keyword in timeline_keywords:
+            if keyword in context_lower:
+                # Find sentences containing timeline info
+                sentences = knowledge_context.split('.')
+                for sentence in sentences:
+                    if keyword in sentence.lower():
+                        info['timelines'].append(sentence.strip())
+        
+        # Extract feature/service information
+        feature_keywords = ['feature', 'service', 'offer', 'provide', 'available', 'includes']
+        for keyword in feature_keywords:
+            if keyword in context_lower:
+                sentences = knowledge_context.split('.')
+                for sentence in sentences:
+                    if keyword in sentence.lower() and len(sentence.strip()) > 20:
+                        info['features'].append(sentence.strip())
+        
+        # Extract pricing information
+        pricing_keywords = ['price', 'cost', '$', 'fee', 'charge', 'subscription', 'plan']
+        for keyword in pricing_keywords:
+            if keyword in context_lower:
+                sentences = knowledge_context.split('.')
+                for sentence in sentences:
+                    if keyword in sentence.lower():
+                        info['pricing_info'].append(sentence.strip())
+        
+        return info
+    
+    def _build_complaint_response(self, company_name: str, email_content: str, context_info: dict) -> str:
+        """Build complaint response using extracted context"""
+        response = f"Dear Valued Customer,\n\nThank you for bringing your concerns to our attention. At {company_name}, we take all customer feedback seriously and are committed to resolving your issue.\n\n"
+        
+        # Add specific processes if available
+        if context_info['processes']:
+            response += "To resolve your concern, here are the specific steps we follow:\n\n"
+            for i, process in enumerate(context_info['processes'][:3], 1):
+                response += f"{i}. {process}\n"
+            response += "\n"
+        
+        # Add specific support steps if available
+        if context_info['support_steps']:
+            response += "Our support process includes:\n\n"
+            for step in context_info['support_steps'][:3]:
+                response += f"• {step}\n"
+            response += "\n"
+        
+        # Add timeline information
+        if context_info['timelines']:
+            timeline_info = context_info['timelines'][0]
+            response += f"Timeline: {timeline_info}\n\n"
+        
+        # Add contact information
+        if context_info['contact_emails']:
+            response += f"For immediate assistance, please contact us at {context_info['contact_emails'][0]}"
+            if context_info['phone_numbers']:
+                response += f" or call {context_info['phone_numbers'][0]}"
+            response += ".\n\n"
+        
+        # Add policies if relevant
+        if context_info['policies']:
+            response += f"Please note: {context_info['policies'][0]}\n\n"
+        
+        response += f"We sincerely apologize for any inconvenience and appreciate your patience as we work to resolve this matter.\n\nBest regards,\n{company_name} Customer Service Team"
         
         return response
     
-    def _create_billing_help_response(self, company_name: str, knowledge_text: str) -> str:
-        """Create specific billing help response"""
-        response = f"""Dear Valued Customer,
-
-Thank you for reaching out to {company_name} regarding your billing concerns. We take all billing matters seriously and are here to help resolve any issues.
-
-To assist you with your billing inquiry, please try the following steps:
-
-"""
+    def _build_sales_response(self, company_name: str, email_content: str, context_info: dict) -> str:
+        """Build sales response using extracted context"""
+        response = f"Dear Prospective Customer,\n\nThank you for your interest in {company_name}! We're excited to help you find the right solution for your needs.\n\n"
         
-        # Add specific billing steps from knowledge
-        if "payment method" in knowledge_text.lower():
-            response += "1. Verify your payment method details in your account settings\n"
-        if "expired cards" in knowledge_text.lower():
-            response += "2. Check if your payment card has expired and update if necessary\n"
-        if "billing@" in knowledge_text:
-            response += "3. For billing disputes or detailed inquiries, contact billing@platform.com\n"
-        if "grace period" in knowledge_text.lower():
-            response += "4. Please note we provide a 3-day grace period for payment issues\n"
+        # Add specific features/services from knowledge
+        if context_info['features']:
+            response += "Here's what we offer:\n\n"
+            for feature in context_info['features'][:3]:
+                response += f"• {feature}\n"
+            response += "\n"
         
-        response += f"""
-Our billing team will review your account and contact you within 24 hours to resolve any outstanding issues.
-
-We value your business and apologize for any inconvenience this may have caused.
-
-Best regards,
-{company_name} Billing Support Team"""
+        # Add pricing information if available
+        if context_info['pricing_info']:
+            response += "Pricing Information:\n\n"
+            for pricing in context_info['pricing_info'][:2]:
+                response += f"• {pricing}\n"
+            response += "\n"
         
-        return response
-    
-    def _create_password_help_response(self, company_name: str, knowledge_text: str) -> str:
-        """Create specific password help response"""
-        response = f"""Dear Customer,
-
-Thank you for contacting {company_name}. I understand you need assistance with password-related issues.
-
-Here's how to resolve password problems:
-
-"""
+        # Add specific processes
+        if context_info['processes']:
+            response += "Our sales process:\n\n"
+            for i, process in enumerate(context_info['processes'][:3], 1):
+                response += f"{i}. {process}\n"
+            response += "\n"
         
-        if "password reset page" in knowledge_text.lower():
-            response += "1. Visit our password reset page\n"
-        if "registered email" in knowledge_text.lower():
-            response += "2. Enter your registered email address\n"
-        if "reset email" in knowledge_text.lower():
-            response += "3. Follow the instructions in the reset email we send you\n"
-        if "security questions" in knowledge_text.lower():
-            response += "4. You may need to answer security questions for verification\n"
-        if "two-factor authentication" in knowledge_text.lower():
-            response += "5. We recommend enabling two-factor authentication for added security\n"
+        # Add contact information
+        if context_info['contact_emails']:
+            sales_email = next((email for email in context_info['contact_emails'] if 'sales' in email.lower()), context_info['contact_emails'][0])
+            response += f"For detailed information, please contact our sales team at {sales_email}"
+            if context_info['phone_numbers']:
+                response += f" or call {context_info['phone_numbers'][0]}"
+            response += ".\n\n"
         
-        response += f"""
-If you continue to experience issues, our support team is available to assist you further.
-
-Best regards,
-{company_name} Technical Support Team"""
+        # Add timeline if available
+        if context_info['timelines']:
+            response += f"Response time: {context_info['timelines'][0]}\n\n"
+        
+        response += f"Looking forward to serving you!\n\nBest regards,\n{company_name} Sales Team"
         
         return response
     
-    def _create_sales_response(self, company_name: str, knowledge_text: str) -> str:
-        """Create sales response using available knowledge"""
-        response = f"""Dear Prospective Customer,
-
-Thank you for your interest in {company_name}! We're excited to help you find the right solution for your needs.
-
-"""
+    def _build_enquiry_response(self, company_name: str, email_content: str, context_info: dict) -> str:
+        """Build enquiry response using extracted context"""
+        response = f"Dear Customer,\n\nThank you for contacting {company_name}. We appreciate your inquiry and are here to provide you with the information you need.\n\n"
         
-        # Add relevant information from knowledge
-        if "pricing" in knowledge_text.lower():
-            response += "Based on your inquiry, I'd be happy to provide you with detailed pricing information and available packages.\n\n"
+        # Add relevant features/information
+        if context_info['features']:
+            response += "Based on your inquiry, here's relevant information about our services:\n\n"
+            for feature in context_info['features'][:3]:
+                response += f"• {feature}\n"
+            response += "\n"
         
-        if "subscription" in knowledge_text.lower():
-            response += "We offer various subscription plans to meet different needs and budgets.\n\n"
+        # Add specific policies or procedures
+        if context_info['policies']:
+            response += "Please note our policies:\n\n"
+            for policy in context_info['policies'][:2]:
+                response += f"• {policy}\n"
+            response += "\n"
         
-        response += f"""Our sales team will contact you within 24 hours to discuss your specific requirements and provide personalized recommendations.
-
-If you have any immediate questions, please feel free to reach out to us directly.
-
-Looking forward to serving you!
-
-Best regards,
-{company_name} Sales Team"""
+        # Add processes if relevant
+        if context_info['processes']:
+            response += "Here's how we can assist you:\n\n"
+            for i, process in enumerate(context_info['processes'][:3], 1):
+                response += f"{i}. {process}\n"
+            response += "\n"
         
-        return response
-    
-    def _create_enquiry_response(self, company_name: str, knowledge_text: str) -> str:
-        """Create enquiry response using available knowledge"""
-        response = f"""Dear Customer,
-
-Thank you for contacting {company_name}. We appreciate your inquiry and are here to provide you with the information you need.
-
-"""
+        # Add contact information
+        if context_info['contact_emails']:
+            support_email = next((email for email in context_info['contact_emails'] if 'support' in email.lower()), context_info['contact_emails'][0])
+            response += f"For additional questions, please contact us at {support_email}"
+            if context_info['phone_numbers']:
+                response += f" or call {context_info['phone_numbers'][0]}"
+            response += ".\n\n"
         
-        # Add context-specific information
-        if len(knowledge_text) > 100:
-            response += "Based on our available resources, we'll provide you with comprehensive information to address your questions.\n\n"
+        # Add timeline information
+        if context_info['timelines']:
+            response += f"Expected response time: {context_info['timelines'][0]}\n\n"
         
-        response += f"""Our customer service team is reviewing your message and will provide you with detailed information within 24 hours.
-
-If you need immediate assistance, please don't hesitate to contact us directly.
-
-Best regards,
-{company_name} Customer Service Team"""
+        response += f"We're here to help and look forward to assisting you further.\n\nBest regards,\n{company_name} Customer Service Team"
         
         return response
     
-    def _create_generic_complaint_response(self, company_name: str, knowledge_text: str) -> str:
-        """Create generic complaint response with available context"""
-        response = f"""Dear Valued Customer,
-
-Thank you for bringing your concerns to our attention. At {company_name}, we take all customer feedback seriously and are committed to resolving any issues you may experience.
-
-"""
+    def _build_offtopic_response(self, company_name: str, context_info: dict) -> str:
+        """Build off-topic response with available context"""
+        response = f"Dear Sender,\n\nThank you for your message. While we appreciate you reaching out to {company_name}, your inquiry appears to be outside the scope of our business operations.\n\n"
         
-        if "support@" in knowledge_text:
-            response += "Our dedicated support team will investigate your concerns and work towards a swift resolution.\n\n"
+        # Add information about what we do offer based on context
+        if context_info['features']:
+            response += "For reference, we specialize in:\n\n"
+            for feature in context_info['features'][:2]:
+                response += f"• {feature}\n"
+            response += "\n"
         
-        response += f"""We sincerely apologize for any inconvenience this may have caused. Our customer service team will investigate your concerns immediately and contact you within 24 hours with a resolution plan.
-
-Your satisfaction is our priority, and we appreciate your patience as we work to resolve this matter.
-
-Best regards,
-{company_name} Customer Service Team"""
+        # Add contact for business-related inquiries
+        if context_info['contact_emails']:
+            response += f"If you have questions related to our products or services, please contact us at {context_info['contact_emails'][0]}.\n\n"
+        
+        response += f"Best regards,\n{company_name} Customer Service Team"
         
         return response
     
     def _basic_response(self, company_name: str, email_content: str, category: str) -> str:
-        """Basic response template when no context is available"""
+        """ONLY use this when no knowledge context is available"""
+        logger.warning(f"Using basic response - no knowledge context available for {company_name}")
+        
         responses = {
             "Sales": f"""Dear Valued Customer,
 
@@ -676,13 +727,13 @@ We have received your inquiry and one of our sales representatives will contact 
 If you have any urgent questions, please don't hesitate to contact us directly.
 
 Best regards,
-{company_name} Customer Service Team""",
+{company_name} Sales Team""",
             
             "Customer Enquiry": f"""Dear Customer,
 
 Thank you for contacting {company_name}. We have received your inquiry and appreciate you taking the time to reach out to us.
 
-Our customer service team is reviewing your message and will provide you with a comprehensive response within 24 hours. We are committed to addressing all your questions and concerns.
+Our customer service team is reviewing your message and will provide you with a comprehensive response within 24 hours.
 
 If you need immediate assistance, please feel free to contact us directly.
 
